@@ -1,0 +1,5 @@
+#!/bin/bash
+
+dbname=XXXX
+
+mysql --defaults-extra-file=cfg.cnf -e "use $dbname; select cpu_time from result where outcome=1 and userid=2 and app_version_id>=20" > client_cpu_time.log && python -c 'import numpy as np; x=np.loadtxt("client_cpu_time.log", skiprows=1, delimiter="|+- "); print "%.1f CPU hrs total;  %.2f +/- %.2f CPU hrs per WU"%(x.sum()/3600, x.mean()/3600, x.std()/3600)'
