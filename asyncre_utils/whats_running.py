@@ -3,6 +3,7 @@ import os, sys
 import re
 import MySQLdb
 from subprocess import check_output
+from datetime import datetime, timedelta
 
 # DB INFORMATION
 sys.exit('EDIT DB INFO')
@@ -21,8 +22,13 @@ def host_count(cpu_frac=0.75):
              'domain_name regexp "(TECH|TCC|TLC|PH|LIB)"')
     cursor.execute(query)
 
+    now = datetime.utcnow()
+    tsconvert = lambda dt: datetime.utcfromtimestamp(dt)
+    acceptable = timedelta(days=5)
+
     total_cpus = 0
     for ncpus, hostid in cursor.fetchall():
+        if now - tsconvert(lastrpc) > acceptable: continue
         total_cpus += int(ncpus * cpu_frac)
 
     return total_cpus
